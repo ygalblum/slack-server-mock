@@ -6,6 +6,9 @@ import logging
 import re
 from urllib.parse import urlparse, parse_qs
 
+from slack_server_mock.injector.di import global_injector
+from slack_server_mock.settings.settings import Settings
+
 
 class MockHandler(SimpleHTTPRequestHandler):
     protocol_version = "HTTP/1.1"
@@ -78,9 +81,10 @@ class MockHandler(SimpleHTTPRequestHandler):
                         "is_enterprise_install": False,
                     }
                 if self.path == "/apps.connections.open":
+                    port = global_injector.get(Settings).websocket_server.port
                     body = {
                         "ok": True,
-                        "url": "ws://0.0.0.0:3001/link",
+                        "url": f"ws://0.0.0.0:{port}/link",
                     }
                 if self.path == "/api.test" and request_body:
                     body = {"ok": True, "args": request_body}
