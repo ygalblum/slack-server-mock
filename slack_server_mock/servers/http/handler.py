@@ -1,24 +1,10 @@
-import asyncio
+from datetime import datetime
+from http import HTTPStatus
+from http.server import SimpleHTTPRequestHandler
 import json
 import logging
 import re
-import threading
-import time
-from http import HTTPStatus
-from http.server import HTTPServer, SimpleHTTPRequestHandler
-from typing import Type
-from unittest import TestCase
 from urllib.parse import urlparse, parse_qs
-from urllib.request import Request, urlopen
-from aiohttp import WSMsgType, web
-import sys
-import websockets
-from datetime import datetime
-
-
-socket_mode_envelopes = [
-    """{"envelope_id":"ac2cfd40-6f8c-4d5e-a1ad-646e532baa19","payload":{"token":"verification-token","team_id":"T111","api_app_id":"A111","event":{"client_msg_id":"f0582a78-72db-4feb-b2f3-1e47d66365c8","type":"message","text":"<@U111> Hi here!","user":"U222","ts":"1610241741.000200","team":"T111","channel":"C111","event_ts":"1610241741.000200","channel_type":"channel"},"type":"event_callback","event_id":"Ev111","event_time":1610241741,"authorizations":[{"enterprise_id":null,"team_id":"T111","user_id":"U333","is_bot":true,"is_enterprise_install":false}],"is_ext_shared_channel":false,"event_context":"1-message-T111-C111"},"type":"events_api","accepts_response_payload":false,"retry_attempt":0,"retry_reason":""}""",
-]
 
 
 class MockHandler(SimpleHTTPRequestHandler):
@@ -132,78 +118,6 @@ class MockHandler(SimpleHTTPRequestHandler):
     def do_POST(self):
         self._handle()
 
-    def do_CONNECT(self):
-        self.wfile.write("HTTP/1.1 200 Connection established\r\n\r\n".encode("utf-8"))
-        self.wfile.close()
-
-class MockServerThread(threading.Thread):
-
-    def run(self):
-        self.server = HTTPServer(("localhost", 8888), MockHandler)
-        try:
-            self.server.serve_forever()
-        finally:
-            self.server.server_close()
-
-    def stop(self):
-        self.server.shutdown()
-        self.join()
-
-def start_http_server():
-    server_address = ('', 8888)
-    httpd = HTTPServer(server_address, MockHandler)
-    print("HTTP server running on port 8888")
-    httpd.serve_forever()
-    print("HTTPD server saying goodbye")
-
-
-async def websocket_handler(websocket, path):
-    print(f"New connection from {websocket.remote_address}")
-    await websocket.send(socket_mode_envelopes[0])
-    try:
-        async for message in websocket:
-            print(f"Received message: {message}")
-            # await websocket.send(socket_mode_envelopes[0])
-            # print("Done sending")
-    except websockets.ConnectionClosed as e:
-        print(f"Connection closed: {e}")
-
-
-async def start_websocket_server():
-    async with websockets.serve(websocket_handler, 'localhost', 3001):
-        try:
-            await asyncio.Future()  # run forever
-        except asyncio.exceptions.CancelledError:
-            print("Websocket server saying goodbye")
-
-httpd = None
-def start_http_server():
-    global httpd
-    server_address = ('', 8888)
-    httpd = HTTPServer(server_address, MockHandler)
-    print("HTTP server running on port 8888")
-    httpd.serve_forever()
-    print("HTTPD server saying goodbye")
-
-def main():
-    loop = asyncio.new_event_loop()
-    websocket_server_task = loop.create_task(start_websocket_server())    
-
-    f = loop.run_in_executor(None, start_http_server)
-    try:
-        loop.run_forever()
-    except KeyboardInterrupt:
-        print("Shutting down servers")
-    finally:
-        print("Canceling websockettask")
-        websocket_server_task.cancel()
-        print("Waiting for WebSocket server to stop")
-        loop.run_until_complete(websocket_server_task)
-        httpd.shutdown()
-        print("Closing loop")
-        loop.close()
-        print("Done")
-
-
-if __name__ == "__main__":
-    main()
+    # def do_CONNECT(self):
+    #     self.wfile.write("HTTP/1.1 200 Connection established\r\n\r\n".encode("utf-8"))
+    #     self.wfile.close()
