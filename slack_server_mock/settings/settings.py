@@ -22,11 +22,11 @@ class WebSocketServer(BaseModel):
 
 class Actor(BaseModel):
     input_file: str = Field(
-        "./input.txt",
+        "./input.json",
         description="Input file containing message to send to the application"
     )
     output_file: str = Field(
-        "./output.txt",
+        "./output.json",
         description="Output file to store the messages received from the application"
     )
 
