@@ -37,9 +37,5 @@ class Settings(BaseModel):
     actor: Actor
 
 # This is visible just for DI or testing purposes.
-# Use dependency injection or `settings()` method instead.
-unsafe_settings = load_active_settings()
-
-# This is visible just for DI or testing purposes.
-# Use dependency injection or `settings()` method instead.
-unsafe_typed_settings = Settings(**unsafe_settings)
+# Use dependency injection instead.
+unsafe_typed_settings = Settings(**load_active_settings())
