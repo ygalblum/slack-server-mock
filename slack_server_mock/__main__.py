@@ -6,7 +6,7 @@ from slack_server_mock.servers.websocket.server import start_websocket_server
 
 
 loop = asyncio.new_event_loop()
-websocket_server_task = loop.create_task(start_websocket_server())    
+websocket_server_task = loop.create_task(start_websocket_server())
 loop.run_in_executor(None, start_http_server)
 try:
     loop.run_forever()

@@ -1,3 +1,4 @@
+""" WebSocket Server """
 import asyncio
 
 from injector import inject, singleton
@@ -11,6 +12,7 @@ from slack_server_mock.settings.settings import Settings
 
 @singleton
 class SlackWebSocketServer():
+    """ Mock Implementation of the Slack WebSocket server """
     @inject
     def __init__(self, settings: Settings, actor: Actor) -> None:
         self._port = settings.websocket_server.port

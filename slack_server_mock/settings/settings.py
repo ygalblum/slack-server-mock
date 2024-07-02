@@ -1,12 +1,11 @@
 """ Settings for the application """
-from typing import Literal
-
 from pydantic import BaseModel, Field
 
 from slack_server_mock.settings.settings_loader import load_active_settings
 
 
 class HttpServer(BaseModel):
+    """ Settings for the HTTP Server """
     port: int = Field(
         8888,
         description="HTTP Server Listening port"
@@ -14,6 +13,7 @@ class HttpServer(BaseModel):
 
 
 class WebSocketServer(BaseModel):
+    """ Settings for the WebSockets Server """
     port: int = Field(
         3001,
         description="HTTP Server Listening port"
@@ -21,6 +21,7 @@ class WebSocketServer(BaseModel):
 
 
 class Actor(BaseModel):
+    """ Settings for the Actor """
     input_file: str = Field(
         "./input.json",
         description="Input file containing message to send to the application"
@@ -32,6 +33,7 @@ class Actor(BaseModel):
 
 
 class Settings(BaseModel):
+    """ Application Settings """
     http_server: HttpServer
     websocket_server: WebSocketServer
     actor: Actor

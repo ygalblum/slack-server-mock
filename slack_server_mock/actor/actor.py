@@ -1,3 +1,4 @@
+""" Slack Actor """
 import asyncio
 import json
 
@@ -9,6 +10,7 @@ from slack_server_mock.settings.settings import Settings
 
 @singleton
 class Actor():
+    """ Slack Actor to send messages and log response """
     @inject
     def __init__(self, settings: Settings) -> None:
         self._conversation = self._load_inputs(settings.actor.input_file)
@@ -17,10 +19,12 @@ class Actor():
         self._websocket = None
 
     async def app_connected(self, websocket: WebSocketServerProtocol):
+        """ Notify the actor that the application connected """
         self._websocket =  websocket
         await self._websocket.send(self._wrap_message_with_envelope(self._conversation[0]['question']))
 
     def message_received(self, msg: str):
+        """ Notify the actor that the application sent a message """
         if self._websocket is None:
             return
         if self._counter >= len(self._conversation):
@@ -42,15 +46,15 @@ class Actor():
         await self._websocket.send(self._wrap_message_with_envelope(self._conversation[self._counter]['question']))
 
     def _dump_conversation(self):
-        with open(self._output, "+w") as f:
+        with open(self._output, "+w", encoding="utf-8") as f:
             json.dump(self._conversation, f)
-        
+
     @staticmethod
     def _load_inputs(path: str):
-        with open(path, "r") as f:
+        with open(path, "r", encoding="utf-8") as f:
             questions = json.load(f)
         return [{"question": q} for q in questions]
-    
+
     @staticmethod
     def _wrap_message_with_envelope(msg: str):
         return json.dumps(
