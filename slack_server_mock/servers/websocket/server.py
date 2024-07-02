@@ -2,7 +2,9 @@ import asyncio
 
 from injector import inject, singleton
 import websockets
+from websockets.server import WebSocketServerProtocol
 
+from slack_server_mock.actor.actor import Actor
 from slack_server_mock.injector.di import global_injector
 from slack_server_mock.settings.settings import Settings
 
@@ -10,13 +12,13 @@ from slack_server_mock.settings.settings import Settings
 @singleton
 class SlackWebSocketServer():
     @inject
-    def __init__(self, settings: Settings) -> None:
+    def __init__(self, settings: Settings, actor: Actor) -> None:
         self._port = settings.websocket_server.port
+        self._actor = actor
 
-    @staticmethod
-    async def websocket_handler(websocket, path):
+    async def websocket_handler(self, websocket: WebSocketServerProtocol):
         print(f"New connection from {websocket.remote_address}")
-        # await websocket.send(socket_mode_envelopes[0])
+        await self._actor.app_connected(websocket)
         try:
             async for message in websocket:
                 print(f"Received message: {message}")

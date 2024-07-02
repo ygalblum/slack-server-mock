@@ -20,9 +20,21 @@ class WebSocketServer(BaseModel):
     )
 
 
+class Actor(BaseModel):
+    input_file: str = Field(
+        "./input.txt",
+        description="Input file containing message to send to the application"
+    )
+    output_file: str = Field(
+        "./output.txt",
+        description="Output file to store the messages received from the application"
+    )
+
+
 class Settings(BaseModel):
     http_server: HttpServer
     websocket_server: WebSocketServer
+    actor: Actor
 
 # This is visible just for DI or testing purposes.
 # Use dependency injection or `settings()` method instead.

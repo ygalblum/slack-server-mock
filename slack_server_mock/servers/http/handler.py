@@ -6,6 +6,7 @@ import logging
 import re
 from urllib.parse import urlparse, parse_qs
 
+from slack_server_mock.actor.actor import Actor
 from slack_server_mock.injector.di import global_injector
 from slack_server_mock.settings.settings import Settings
 
@@ -90,6 +91,7 @@ class SlackHTTPHandler(SimpleHTTPRequestHandler):
                     body = {"ok": True, "args": request_body}
                 if self.path == "/chat.postMessage":
                     print(f"Got response")
+                    global_injector.get(Actor).message_received(request_body['text'])
                     ts = datetime.timestamp(datetime.now())
                     body = {
                         "ok": True,
