@@ -21,4 +21,3 @@ finally:
     print("Closing loop")
     loop.close()
     print("Done")
-# global_injector.get(Server).run()
