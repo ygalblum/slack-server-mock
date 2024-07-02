@@ -10,7 +10,7 @@ from slack_server_mock.injector.di import global_injector
 from slack_server_mock.settings.settings import Settings
 
 
-class MockHandler(SimpleHTTPRequestHandler):
+class SlackHTTPHandler(SimpleHTTPRequestHandler):
     protocol_version = "HTTP/1.1"
     default_request_version = "HTTP/1.1"
     logger = logging.getLogger(__name__)

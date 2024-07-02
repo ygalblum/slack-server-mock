@@ -8,7 +8,7 @@ from slack_server_mock.settings.settings import Settings
 
 
 @singleton
-class Server():
+class SlackWebSocketServer():
     @inject
     def __init__(self, settings: Settings) -> None:
         self._port = settings.websocket_server.port
@@ -33,4 +33,4 @@ class Server():
 
 
 async def start_websocket_server():
-    await global_injector.get(Server).start_websocket_server()
+    await global_injector.get(SlackWebSocketServer).start_websocket_server()

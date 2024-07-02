@@ -4,15 +4,15 @@ from injector import inject, singleton
 
 from slack_server_mock.injector.di import global_injector
 from slack_server_mock.settings.settings import Settings
-from slack_server_mock.servers.http.handler import MockHandler
+from slack_server_mock.servers.http.handler import SlackHTTPHandler
 
 
 @singleton
-class Server():
+class SlackHTTPServer():
     @inject
     def __init__(self, settings: Settings) -> None:
         self._port = settings.http_server.port
-        self._httpd = HTTPServer(('', self._port), MockHandler)
+        self._httpd = HTTPServer(('', self._port), SlackHTTPHandler)
 
     def run(self):
         print("HTTP server running on port 8888")
@@ -24,8 +24,8 @@ class Server():
 
 
 def start_http_server():
-    global_injector.get(Server).run()
+    global_injector.get(SlackHTTPServer).run()
 
 
 def stop_http_server():
-    global_injector.get(Server).stop()
+    global_injector.get(SlackHTTPServer).stop()
