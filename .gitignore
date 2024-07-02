@@ -174,3 +174,7 @@ cython_debug/
 # Ansible inventory and env
 *inventory*.yml
 *env*.yml
+
+# Input and Output files (default names)
+input.json
+output.json
