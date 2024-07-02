@@ -110,7 +110,7 @@ class SlackHTTPHandler(SimpleHTTPRequestHandler):
             self.send_response(HTTPStatus.OK)
             self.set_common_headers()
             self.wfile.write(json.dumps(body).encode("utf-8"))
-            self.wfile.close()
+            # self.wfile.close()
 
         except Exception as e:
             self.logger.error(str(e), exc_info=True)
