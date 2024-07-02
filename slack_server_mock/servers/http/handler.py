@@ -111,7 +111,6 @@ class SlackHTTPHandler(SimpleHTTPRequestHandler):
             self.send_response(HTTPStatus.OK)
             self.set_common_headers()
             self.wfile.write(json.dumps(body).encode("utf-8"))
-            # self.wfile.close()
 
         except Exception as e:
             self.logger.error(str(e), exc_info=True)
@@ -122,7 +121,3 @@ class SlackHTTPHandler(SimpleHTTPRequestHandler):
 
     def do_POST(self):
         self._handle()
-
-    # def do_CONNECT(self):
-    #     self.wfile.write("HTTP/1.1 200 Connection established\r\n\r\n".encode("utf-8"))
-    #     self.wfile.close()
