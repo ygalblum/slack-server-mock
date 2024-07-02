@@ -90,7 +90,6 @@ class SlackHTTPHandler(SimpleHTTPRequestHandler):
                 if self.path == "/api.test" and request_body:
                     body = {"ok": True, "args": request_body}
                 if self.path == "/chat.postMessage":
-                    print(f"Got response")
                     global_injector.get(Actor).message_received(request_body['text'])
                     ts = datetime.timestamp(datetime.now())
                     body = {

@@ -13,11 +13,7 @@ try:
 except KeyboardInterrupt:
     print("Shutting down servers")
 finally:
-    print("Canceling websockettask")
     websocket_server_task.cancel()
-    print("Waiting for WebSocket server to stop")
     loop.run_until_complete(websocket_server_task)
     stop_http_server()
-    print("Closing loop")
     loop.close()
-    print("Done")

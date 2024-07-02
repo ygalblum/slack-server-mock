@@ -12,7 +12,6 @@ class Actor():
     @inject
     def __init__(self, settings: Settings) -> None:
         self._conversation = self._load_inputs(settings.actor.input_file)
-        print(f"Num of conversations: {len(self._conversation)}")
         self._output = settings.actor.output_file
         self._counter = 0
         self._websocket = None
@@ -28,7 +27,6 @@ class Actor():
             return
         self._conversation[self._counter]['answer'] = msg
         self._counter += 1
-        print(f"Count: {self._counter}")
         if self._counter < len(self._conversation):
             self._send_response()
         else:
