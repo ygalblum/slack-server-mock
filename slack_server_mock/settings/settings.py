@@ -38,6 +38,7 @@ class Settings(BaseModel):
     websocket_server: WebSocketServer
     actor: Actor
 
+
 # This is visible just for DI or testing purposes.
 # Use dependency injection instead.
 unsafe_typed_settings = Settings(**load_active_settings())

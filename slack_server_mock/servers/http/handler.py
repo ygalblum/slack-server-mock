@@ -28,10 +28,8 @@ class SlackHTTPHandler(SimpleHTTPRequestHandler):
     def _is_valid_token(self):
         if self.path.startswith("oauth"):
             return True
-        return "Authorization" in self.headers and (
-            str(self.headers["Authorization"]).startswith("Bearer xoxb-")
-            or str(self.headers["Authorization"]).startswith("Bearer xapp-")
-        )
+        auth = self.headers.get("Authorization")
+        return auth and (str(auth).startswith("Bearer xoxb-") or str(auth).startswith("Bearer xapp-"))
 
     def _set_common_headers(self):
         self.send_header("content-type", "application/json;charset=utf-8")

@@ -27,7 +27,6 @@ class SlackWebSocketServer():
         except websockets.ConnectionClosed as e:
             print(f"Connection closed: {e}")
 
-
     async def start_websocket_server(self):
         async with websockets.serve(self.websocket_handler, 'localhost', self._port):
             try:

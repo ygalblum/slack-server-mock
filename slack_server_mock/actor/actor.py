@@ -20,7 +20,7 @@ class Actor():
 
     async def app_connected(self, websocket: WebSocketServerProtocol):
         """ Notify the actor that the application connected """
-        self._websocket =  websocket
+        self._websocket = websocket
         await self._websocket.send(self._wrap_message_with_envelope(self._conversation[0]['question']))
 
     def message_received(self, msg: str):
