@@ -50,7 +50,8 @@ class Actor():
     @staticmethod
     def _load_inputs(path: str):
         with open(path, "r") as f:
-            return json.load(f)
+            questions = json.load(f)
+        return [{"question": q} for q in questions]
     
     @staticmethod
     def _wrap_message_with_envelope(msg: str):
