@@ -37,4 +37,4 @@ jobs:
 
     - name: Analysing the code with pylint
       run: |
-        pylint knowledge_base_gpt
+        pylint slack_server_mock
