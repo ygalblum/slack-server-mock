@@ -6,8 +6,8 @@ from slack_bolt.adapter.socket_mode import SocketModeHandler
 from slack_sdk.web import WebClient
 
 
-bot_token="xapp-A111-222-xyz"
-app_token="xoxb-api_test"
+bot_token = "xapp-A111-222-xyz"
+app_token = "xoxb-api_test"
 
 
 class KnowledgeBaseSlackBot():  # pylint:disable=R0903
