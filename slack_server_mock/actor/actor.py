@@ -1,9 +1,8 @@
 """ Slack Actor """
-import asyncio
 import json
 
 from injector import inject, singleton
-from websockets.server import WebSocketServerProtocol
+from tornado.websocket import WebSocketHandler
 
 from slack_server_mock.settings.settings import Settings
 
@@ -18,10 +17,10 @@ class Actor():
         self._counter = 0
         self._websocket = None
 
-    async def app_connected(self, websocket: WebSocketServerProtocol):
+    def app_connected(self, websocket: WebSocketHandler):
         """ Notify the actor that the application connected """
         self._websocket = websocket
-        await self._websocket.send(self._wrap_message_with_envelope(self._conversation[0]['question']))
+        self._websocket.write_message(self._wrap_message_with_envelope(self._conversation[0]['question']))
 
     def message_received(self, msg: str):
         """ Notify the actor that the application sent a message """
@@ -32,18 +31,11 @@ class Actor():
         self._conversation[self._counter]['answer'] = msg
         self._counter += 1
         if self._counter < len(self._conversation):
-            self._send_response()
+            self._websocket.write_message(
+                self._wrap_message_with_envelope(self._conversation[self._counter]['question'])
+            )
         else:
             self._dump_conversation()
-
-    def _send_response(self):
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
-        loop.run_until_complete(self._do_send_response())
-        loop.close()
-
-    async def _do_send_response(self):
-        await self._websocket.send(self._wrap_message_with_envelope(self._conversation[self._counter]['question']))
 
     def _dump_conversation(self):
         with open(self._output, "+w", encoding="utf-8") as f:
