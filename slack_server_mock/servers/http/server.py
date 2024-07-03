@@ -1,11 +1,12 @@
 """ HTTP Server """
-from http.server import HTTPServer
-
 from injector import inject, singleton
+from tornado.httpserver import HTTPServer
+from tornado.web import Application
+
 
 from slack_server_mock.injector.di import global_injector
 from slack_server_mock.settings.settings import Settings
-from slack_server_mock.servers.http.handler import SlackHTTPHandler
+from slack_server_mock.servers.http import handler
 
 
 @singleton
@@ -14,17 +15,25 @@ class SlackHTTPServer():
     @inject
     def __init__(self, settings: Settings) -> None:
         self._port = settings.http_server.port
-        self._httpd = HTTPServer(('', self._port), SlackHTTPHandler)
+        app = Application(
+            [
+                (r"/auth.test", handler.AuthTestHandler),
+                (r"/apps.connections.open", handler.AppsConnectionsOpenHandler),
+                (r"/api.test", handler.ApiTestHandler),
+                (r"/chat.postMessage", handler.ChatPostMessageHandler)
+            ]
+        )
+        self._http_server = HTTPServer(app)
 
     def run(self):
         """ Start the HTTP Server """
-        print("HTTP server running on port 8888")
-        self._httpd.serve_forever()
-        print("HTTPD server saying goodbye")
+        print(f"HTTP server running on port {self._port}")
+        self._http_server.listen(self._port)
 
     def stop(self):
         """ Stop the HTTP Server """
-        self._httpd.shutdown()
+        self._http_server.stop()
+        print("HTTP server shutdown")
 
 
 def start_http_server():
