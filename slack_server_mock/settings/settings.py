@@ -22,13 +22,9 @@ class WebSocketServer(BaseModel):
 
 class Actor(BaseModel):
     """ Settings for the Actor """
-    input_file: str = Field(
-        "./input.json",
-        description="Input file containing message to send to the application"
-    )
-    output_file: str = Field(
-        "./output.json",
-        description="Output file to store the messages received from the application"
+    port: int = Field(
+        8080,
+        description="Actor HTTP Server Listening port"
     )
 
 
