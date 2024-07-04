@@ -10,7 +10,7 @@ bot_token = "xapp-A111-222-xyz"
 app_token = "xoxb-api_test"
 
 
-class KnowledgeBaseSlackBot():  # pylint:disable=R0903
+class EchoSlackBot():  # pylint:disable=R0903
     """ Slackbot application backend """
 
     def __init__(self, base_url="http://localhost:8888") -> None:
@@ -37,4 +37,4 @@ class KnowledgeBaseSlackBot():  # pylint:disable=R0903
 
 
 if __name__ == "__main__":
-    KnowledgeBaseSlackBot().run(block=True)
+    EchoSlackBot().run(block=True)
