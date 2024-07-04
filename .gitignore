@@ -175,6 +175,3 @@ cython_debug/
 *inventory*.yml
 *env*.yml
 
-# Input and Output files (default names)
-input.json
-output.json

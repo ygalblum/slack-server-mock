@@ -1,12 +1,12 @@
 """ HTTP Handler """
 from datetime import datetime
-import json
 import re
 
 from tornado.web import RequestHandler
 
 from slack_server_mock.actor.actor import Actor
 from slack_server_mock.injector.di import global_injector
+from slack_server_mock.servers.base_http_handlers import load_json_from_body
 from slack_server_mock.settings.settings import Settings
 
 
@@ -91,13 +91,10 @@ class ApiTestHandler(BaseSlackHandler):  # pylint: disable=W0223
     def post(self):
         """ Handle post request """
         if self._is_request_valid():
-            try:
-                data = json.loads(self.request.body)
-                if data:
-                    self.write({"ok": True, "args": data})
-            except json.JSONDecodeError:
-                self.set_status(400)
-                self.write({"error": "Invalid JSON"})
+            data = load_json_from_body(self)
+            if not data:
+                return
+            self.write({"ok": True, "args": data})
 
 
 class ChatPostMessageHandler(BaseSlackHandler):  # pylint: disable=W0223
@@ -106,11 +103,8 @@ class ChatPostMessageHandler(BaseSlackHandler):  # pylint: disable=W0223
     def post(self):
         """ Handle post request """
         if self._is_request_valid():
-            try:
-                data = json.loads(self.request.body)
-            except json.JSONDecodeError:
-                self.set_status(400)
-                self.write({"error": "Invalid JSON"})
+            data = load_json_from_body(self)
+            if not data:
                 return
 
             global_injector.get(Actor).message_received(data['text'])

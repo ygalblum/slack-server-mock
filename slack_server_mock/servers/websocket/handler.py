@@ -15,3 +15,4 @@ class SlackWebSocketHandler(WebSocketHandler):
 
     def on_close(self):
         print("WebSocket closed")
+        global_injector.get(Actor).app_disconnected()
