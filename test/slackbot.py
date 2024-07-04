@@ -13,25 +13,28 @@ app_token = "xoxb-api_test"
 class KnowledgeBaseSlackBot():  # pylint:disable=R0903
     """ Slackbot application backend """
 
-    def __init__(self) -> None:
-        self._client = WebClient(token=bot_token, base_url="http://localhost:8888")
+    def __init__(self, base_url="http://localhost:8888") -> None:
+        self._client = WebClient(token=bot_token, base_url=base_url)
         self._handler = SocketModeHandler(App(client=self._client), app_token)
         self._handler.app.message()(self._got_message)
 
-    def run(self):
+    def run(self, block=False):
         """ Start the Slackbot backend application """
-        self._handler.start()
+        if block:
+            self._handler.start()
+        else:
+            self._handler.connect()
 
     def _got_message(self, message, say):
         print("Got message {}".format(message['text']))
-        say("Hello right back at ya")
+        say(message['text'])
+
+    def is_connected(self) -> bool:
+        return self._handler.client.is_connected()
+
+    def stop(self):
+        self._handler.close()
 
 
 if __name__ == "__main__":
-    bot = KnowledgeBaseSlackBot()
-    t = Thread(target=bot.run)
-    t.start()
-    while not bot._handler.client.is_connected():
-        time.sleep(1)
-    # bot._handler.client.send_message("hello")
-    t.join()
+    KnowledgeBaseSlackBot().run(block=True)
