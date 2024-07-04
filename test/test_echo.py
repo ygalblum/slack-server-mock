@@ -4,7 +4,7 @@ import subprocess
 
 import pytest
 import requests
-from slackbot import KnowledgeBaseSlackBot
+from slackbot import EchoSlackBot
 
 
 # Fixture to manage Podman container lifecycle
@@ -39,7 +39,7 @@ def podman_container():
 
 @pytest.fixture
 def bot():
-    bot = KnowledgeBaseSlackBot()
+    bot = EchoSlackBot()
     bot.run()
     while not bot.is_connected():
         time.sleep(1)
