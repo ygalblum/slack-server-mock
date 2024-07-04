@@ -1,0 +1,54 @@
+---
+name: Release
+
+on:
+  release:
+    types:
+      - published
+
+jobs:
+  pylint:
+    uses: ygalblum/slack-server-mock/.github/workflows/pylint.yml@main
+  pycodestyle:
+    uses: ygalblum/slack-server-mock/.github/workflows/pycodestyle.yml@main
+  e2e:
+    uses: ygalblum/slack-server-mock/.github/workflows/e2e-test.yml@main
+  prechecks:
+    needs:
+      - pylint
+      - pycodestyle
+      - e2e
+    runs-on: ubuntu-latest
+    steps:
+      - run: >-
+          python -c "assert set([
+          '${{ needs.pylint.result }}',
+          '${{ needs.pycodestyle.result }}',
+          '${{ needs.e2e.result }}',
+          ]) == {'success'}"
+  release:
+    needs:
+      - prechecks
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build Image
+        id: build-image
+        uses: redhat-actions/buildah-build@v2
+        with:
+          image: slack_server_mock
+          tags: latest ${{ github.sha }} ${{ github.ref_name }}
+          containerfiles: |
+            ./Containerfile
+
+      - name: Push To quay.io
+        id: push-to-quay
+        uses: redhat-actions/push-to-registry@v2
+        with:
+          image: ${{ steps.build-image.outputs.image }}
+          tags: ${{ steps.build-image.outputs.tags }}
+          registry: quay.io/yblum
+          username: yblum+slack_server_mock
+          password: ${{ secrets.QUAY_REGISTRY_PASSWORD }}
+...
