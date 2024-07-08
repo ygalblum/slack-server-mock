@@ -14,7 +14,7 @@ from slack_server_mock.constants import PROJECT_ROOT_PATH
 
 logger = logging.getLogger(__name__)
 
-_settings_folder = os.environ.get("KNOWLEDGE_BASE_SETTINGS_FOLDER", PROJECT_ROOT_PATH)
+_settings_folder = os.environ.get("SLACK_MOCK_SERVER_SETTINGS_FOLDER", PROJECT_ROOT_PATH)
 
 # if running in unittest, use the test profile
 _test_profile = ["test"] if "tests.fixtures" in sys.modules else []
@@ -22,7 +22,7 @@ _test_profile = ["test"] if "tests.fixtures" in sys.modules else []
 # Calculate the additional profiles from the environment variable
 _additional_profiles = [
     item.strip()
-    for item in os.environ.get("KNOWLEDGE_BASE_PROFILES", "").split(",")
+    for item in os.environ.get("SLACK_MOCK_SERVER_PROFILES", "").split(",")
     if item.strip()
 ]
 
