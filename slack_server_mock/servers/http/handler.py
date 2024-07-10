@@ -55,20 +55,21 @@ class AuthTestHandler(BaseSlackHandler):  # pylint: disable=W0223
 
     def post(self):
         """ Handle post request """
-        if self._is_request_valid():
-            self.write(
-                {
-                    "ok": True,
-                    "url": "https://xyz.slack.com/",
-                    "team": "Testing Workspace",
-                    "user": "bot-user",
-                    "team_id": "T111",
-                    "user_id": "W11",
-                    "bot_id": "B111",
-                    "enterprise_id": "E111",
-                    "is_enterprise_install": False,
-                }
-            )
+        if not self._is_request_valid():
+            return
+        self.write(
+            {
+                "ok": True,
+                "url": "https://xyz.slack.com/",
+                "team": "Testing Workspace",
+                "user": "bot-user",
+                "team_id": "T111",
+                "user_id": "W11",
+                "bot_id": "B111",
+                "enterprise_id": "E111",
+                "is_enterprise_install": False,
+            }
+        )
 
 
 class AppsConnectionsOpenHandler(BaseSlackHandler):  # pylint: disable=W0223
@@ -76,14 +77,15 @@ class AppsConnectionsOpenHandler(BaseSlackHandler):  # pylint: disable=W0223
 
     def post(self):
         """ Handle post request """
-        if self._is_request_valid():
-            port = global_injector.get(Settings).slack_server.websocket_port
-            self.write(
-                {
-                    "ok": True,
-                    "url": f"ws://{self.request.host_name}:{port}/link",
-                }
-            )
+        if not self._is_request_valid():
+            return
+        port = global_injector.get(Settings).slack_server.websocket_port
+        self.write(
+            {
+                "ok": True,
+                "url": f"ws://{self.request.host_name}:{port}/link",
+            }
+        )
 
 
 class ApiTestHandler(BaseSlackHandler):  # pylint: disable=W0223
@@ -91,11 +93,12 @@ class ApiTestHandler(BaseSlackHandler):  # pylint: disable=W0223
 
     def post(self):
         """ Handle post request """
-        if self._is_request_valid():
-            data = load_json_from_body(self)
-            if not data:
-                return
-            self.write({"ok": True, "args": data})
+        if not self._is_request_valid():
+            return
+        data = load_json_from_body(self)
+        if not data:
+            return
+        self.write({"ok": True, "args": data})
 
 
 class ChatPostMessageHandler(BaseSlackHandler):  # pylint: disable=W0223
@@ -103,30 +106,33 @@ class ChatPostMessageHandler(BaseSlackHandler):  # pylint: disable=W0223
 
     def post(self):
         """ Handle post request """
-        if self._is_request_valid():
-            data = load_json_from_body(self)
-            if not data:
-                return
+        if not self._is_request_valid():
+            return
+        data = load_json_from_body(self)
+        if not data:
+            return
 
-            global_injector.get(Actor).message_received(data['text'])
-            ts = datetime.timestamp(datetime.now())
-            self.write(
-                {
-                    "ok": True,
-                    "channel": data['channel'],
-                    "ts": ts,
-                    "message": {
-                        "text": data['text'],
-                        "type": "message",
-                        "ts": ts
-                    }
+        global_injector.get(Actor).message_received(data['text'])
+        ts = datetime.timestamp(datetime.now())
+        self.write(
+            {
+                "ok": True,
+                "channel": data['channel'],
+                "ts": ts,
+                "message": {
+                    "text": data['text'],
+                    "type": "message",
+                    "ts": ts
                 }
-            )
+            }
+        )
 
 
 class ConversationsListHandler(BaseSlackHandler):  # pylint: disable=W0223
     """ Handler for conversations.list endpoint """
     def _handle(self):
+        if not self._is_request_valid():
+            return
         self.write(
             {
                 "ok": True,
