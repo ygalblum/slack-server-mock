@@ -14,7 +14,7 @@ class SlackWebSocketServer():
     """ Mock Implementation of the Slack WebSocket server """
     @inject
     def __init__(self, settings: Settings, actor: Actor) -> None:
-        self._port = settings.websocket_server.port
+        self._port = settings.slack_server.websocket_port
         self._actor = actor
         ws_app = Application(
             [
