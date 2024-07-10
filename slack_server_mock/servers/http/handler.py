@@ -143,3 +143,25 @@ class ConversationsListHandler(BaseSlackHandler):  # pylint: disable=W0223
             While the documentation states that this is a GET command, the SDK calls PUT
         """
         self._handle()
+
+
+class ConversationsJoinHandler(BaseSlackHandler):  # pylint: disable=W0223
+    """ Handler for conversations.join endpoint """
+    def post(self):
+        """ Handle POST request """
+        if not self._is_request_valid():
+            return
+
+        arg = self.request.body.decode("utf-8").split('=')
+        if not (len(arg) == 2 and arg[0] == "channel"):
+            self.set_status(400)
+            self.write({"error": "Invalid argument"})
+            return
+
+        channels = [
+            channel for channel in global_injector.get(SlackServer).channels if channel['id'] == arg[1]
+        ]
+        if len(channels) == 0:
+            self.write({"ok": False, "error": "channel_not_found"})
+        else:
+            self.write({"ok": True, "channel": channels[0]})
