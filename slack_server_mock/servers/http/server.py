@@ -20,6 +20,7 @@ class SlackHTTPServer(BaseHTTPServer):
                 (r"/apps.connections.open", handler.AppsConnectionsOpenHandler),
                 (r"/api.test", handler.ApiTestHandler),
                 (r"/chat.postMessage", handler.ChatPostMessageHandler),
+                (r"/conversations.join", handler.ConversationsJoinHandler),
                 (r"/conversations.list", handler.ConversationsListHandler),
             ]
         )
