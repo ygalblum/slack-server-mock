@@ -4,7 +4,6 @@ from tornado.httpserver import HTTPServer
 from tornado.web import Application
 
 from slack_server_mock.actor.actor import Actor
-from slack_server_mock.injector.di import global_injector
 from slack_server_mock.servers.websocket import handler
 from slack_server_mock.settings.settings import Settings
 
@@ -32,11 +31,3 @@ class SlackWebSocketServer():
         """ Stop the HTTP Server """
         self._ws_server.stop()
         print(f"WebSocket server shutdown")
-
-
-def start_websocket_server():
-    global_injector.get(SlackWebSocketServer).run()
-
-
-def stop_websocket_server():
-    global_injector.get(SlackWebSocketServer).stop()

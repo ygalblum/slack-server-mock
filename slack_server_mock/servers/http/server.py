@@ -3,7 +3,6 @@ from injector import inject, singleton
 from tornado.web import Application
 
 
-from slack_server_mock.injector.di import global_injector
 from slack_server_mock.settings.settings import Settings
 from slack_server_mock.servers.base_http_server import BaseHTTPServer
 from slack_server_mock.servers.http import handler
@@ -23,13 +22,3 @@ class SlackHTTPServer(BaseHTTPServer):
             ]
         )
         super().__init__(app, settings.slack_server.http_port)
-
-
-def start_http_server():
-    """ Static method for starting the HTTP Server """
-    global_injector.get(SlackHTTPServer).run()
-
-
-def stop_http_server():
-    """ Static method for stopping the HTTP Server """
-    global_injector.get(SlackHTTPServer).stop()
