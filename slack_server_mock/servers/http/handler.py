@@ -76,7 +76,7 @@ class AppsConnectionsOpenHandler(BaseSlackHandler):  # pylint: disable=W0223
     def post(self):
         """ Handle post request """
         if self._is_request_valid():
-            port = global_injector.get(Settings).websocket_server.port
+            port = global_injector.get(Settings).slack_server.websocket_port
             self.write(
                 {
                     "ok": True,

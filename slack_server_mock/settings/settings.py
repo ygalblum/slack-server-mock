@@ -4,17 +4,14 @@ from pydantic import BaseModel, Field
 from slack_server_mock.settings.settings_loader import load_active_settings
 
 
-class HttpServer(BaseModel):
-    """ Settings for the HTTP Server """
-    port: int = Field(
+class SlackServer(BaseModel):
+    """ Slack Server """
+    http_port: int = Field(
         8888,
         description="HTTP Server Listening port"
     )
 
-
-class WebSocketServer(BaseModel):
-    """ Settings for the WebSockets Server """
-    port: int = Field(
+    websocket_port: int = Field(
         3001,
         description="HTTP Server Listening port"
     )
@@ -30,8 +27,7 @@ class Actor(BaseModel):
 
 class Settings(BaseModel):
     """ Application Settings """
-    http_server: HttpServer
-    websocket_server: WebSocketServer
+    slack_server: SlackServer
     actor: Actor
 
 

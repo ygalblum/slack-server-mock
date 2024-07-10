@@ -22,7 +22,7 @@ class SlackHTTPServer(BaseHTTPServer):
                 (r"/chat.postMessage", handler.ChatPostMessageHandler)
             ]
         )
-        super().__init__(app, settings.http_server.port)
+        super().__init__(app, settings.slack_server.http_port)
 
 
 def start_http_server():

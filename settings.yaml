@@ -1,3 +1,2 @@
-http_server: {}
-websocket_server: {}
+slack_server: {}
 actor: {}

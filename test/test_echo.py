@@ -4,6 +4,7 @@ import subprocess
 
 import pytest
 import requests
+from slack_sdk.errors import SlackApiError
 from slackbot import EchoSlackBot
 
 
@@ -38,9 +39,13 @@ def podman_container():
 
 
 @pytest.fixture
-def bot():
+def bot(podman_container):
     bot = EchoSlackBot()
-    bot.run()
+    try:
+        bot.run()
+    except SlackApiError:
+        subprocess.run(["podman", "logs", podman_container], check=True)
+        raise
     while not bot.is_connected():
         time.sleep(1)
     yield bot
