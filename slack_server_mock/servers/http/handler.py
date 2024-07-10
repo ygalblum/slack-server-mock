@@ -6,6 +6,7 @@ from tornado.web import RequestHandler
 
 from slack_server_mock.actor.actor import Actor
 from slack_server_mock.injector.di import global_injector
+from slack_server_mock.slack_server.slack_server import SlackServer
 from slack_server_mock.servers.base_http_handlers import load_json_from_body
 from slack_server_mock.settings.settings import Settings
 
@@ -121,3 +122,24 @@ class ChatPostMessageHandler(BaseSlackHandler):  # pylint: disable=W0223
                     }
                 }
             )
+
+
+class ConversationsListHandler(BaseSlackHandler):  # pylint: disable=W0223
+    """ Handler for conversations.list endpoint """
+    def _handle(self):
+        self.write(
+            {
+                "ok": True,
+                "channels": global_injector.get(SlackServer).channels
+            }
+        )
+
+    def get(self):
+        """ Handle GET request """
+        self._handle()
+
+    def post(self):
+        """ Handle POST request.
+            While the documentation states that this is a GET command, the SDK calls PUT
+        """
+        self._handle()

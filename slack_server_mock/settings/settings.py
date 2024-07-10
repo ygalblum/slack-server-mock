@@ -16,6 +16,11 @@ class SlackServer(BaseModel):
         description="HTTP Server Listening port"
     )
 
+    channels_path: str = Field(
+        None,
+        description="Path to a file containing the list of conversations"
+    )
+
 
 class Actor(BaseModel):
     """ Settings for the Actor """
