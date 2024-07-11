@@ -128,6 +128,29 @@ class ChatPostMessageHandler(BaseSlackHandler):  # pylint: disable=W0223
         )
 
 
+class ChatPostEphemeralHandler(BaseSlackHandler):  # pylint: disable=W0223
+    """ Handler for chat.postEphemeral endpoint """
+
+    def post(self):
+        """ Handle post request """
+        # Validate the request
+        if not self._is_request_valid():
+            return
+        # Get the payload
+        data = load_json_from_body(self)
+        if not data:
+            return
+        # Notify the actor that a message was received
+        global_injector.get(Actor).ephemeral_received(data['text'])
+        # Write back to the application
+        self.write(
+            {
+                "ok": True,
+                "ts": datetime.timestamp(datetime.now())
+            }
+        )
+
+
 class ConversationsListHandler(BaseSlackHandler):  # pylint: disable=W0223
     """ Handler for conversations.list endpoint """
     def _handle(self):

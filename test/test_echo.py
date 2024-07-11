@@ -54,5 +54,17 @@ def bot(podman_container):
 
 def test_echo(bot, podman_container):
     msg = "foo"
+    # Send a message
     res = requests.post(url="http://localhost:8080/message", json={"message": msg})
-    assert res.json().get('answer') == msg
+
+    # Assert that the answer exists and that it is an echo of the message
+    answer = res.json().get('answer')
+    assert answer is not None
+    assert answer == msg
+
+    # Assert that the one ephemeral message exists and that it is an echo of the message
+    ephemeral_messages = res.json().get('ephemeral')
+    assert ephemeral_messages is not None
+    assert isinstance(ephemeral_messages, list)
+    assert len(ephemeral_messages) == 1
+    assert ephemeral_messages[0] == msg

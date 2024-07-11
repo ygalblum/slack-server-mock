@@ -28,7 +28,7 @@ class MessageHandler(RequestHandler):  # pylint: disable=W0223
             self.write({"error": "The application is not connected"})
             return
 
-        self.write({"answer": response})
+        self.write({"answer": response[0], "ephemeral": response[1]})
 
 
 class ConnectedHandler(RequestHandler):  # pylint: disable=W0223
