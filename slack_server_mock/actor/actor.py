@@ -1,8 +1,10 @@
 """ Slack Actor """
+import datetime
 import json
 
 from injector import inject, singleton
 from tornado.locks import Event
+from tornado import util
 from tornado.websocket import WebSocketHandler, WebSocketClosedError
 
 
@@ -27,20 +29,28 @@ class Actor():
         """ Check if the application is connected """
         return self._websocket is not None
 
-    async def _wait_for_response(self):
-        await self._event.wait()
+    async def _wait_for_response(self, timeout: float):
+        if timeout < 0:
+            return
+
+        await self._event.wait(
+            timeout=(None if timeout == 0 else datetime.timedelta(seconds=timeout))
+        )
         response = self._response
         self._response = None
         return response
 
-    async def send_message(self, msg: str, wait_for_response=True) -> str:
+    async def send_message(self, msg: str, timeout: float = 300.0) -> str:
         """ Send a message to the application """
         if not self.is_app_connected():
             raise WebSocketClosedError()
 
         self._websocket.write_message(self._wrap_message_with_envelope(msg))
 
-        return await self._wait_for_response() if wait_for_response else ""
+        try:
+            return await self._wait_for_response(timeout=timeout)
+        except util.TimeoutError:
+            return ""
 
     def message_received(self, msg: str):
         """ Notify the actor that a message was received """
