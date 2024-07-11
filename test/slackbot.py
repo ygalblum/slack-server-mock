@@ -27,6 +27,11 @@ class EchoSlackBot():  # pylint:disable=R0903
 
     def _got_message(self, message, say):
         print("Got message {}".format(message['text']))
+        self._handler.app.client.chat_postEphemeral(
+            channel=message['channel'],
+            user=message['user'],
+            text=message['text']
+        )
         say(message['text'])
 
     def is_connected(self) -> bool:

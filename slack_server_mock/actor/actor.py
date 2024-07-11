@@ -1,6 +1,7 @@
 """ Slack Actor """
 import datetime
 import json
+from typing import List, Tuple
 
 from injector import inject, singleton
 from tornado.locks import Event
@@ -16,6 +17,7 @@ class Actor():
         self._websocket = None
         self._event = Event()
         self._response = None
+        self._ephemeral_messages = []
 
     def app_connected(self, websocket: WebSocketHandler):
         """ Notify the actor that the application connected """
@@ -29,34 +31,42 @@ class Actor():
         """ Check if the application is connected """
         return self._websocket is not None
 
-    async def _wait_for_response(self, timeout: float):
+    async def _wait_for_response(self, timeout: float) -> Tuple[str, List[str]]:
         if timeout < 0:
             return
 
-        await self._event.wait(
-            timeout=(None if timeout == 0 else datetime.timedelta(seconds=timeout))
-        )
-        response = self._response
-        self._response = None
-        return response
+        try:
+            await self._event.wait(
+                timeout=(None if timeout == 0 else datetime.timedelta(seconds=timeout))
+            )
+        except util.TimeoutError:
+            # In case of timeout make sure to return ephemeral_messages that were accumulated
+            pass
 
-    async def send_message(self, msg: str, timeout: float = 300.0) -> str:
+        response = self._response or ""
+        self._response = None
+        ephemeral_messages = self._ephemeral_messages
+        self._ephemeral_messages = []
+        return response, ephemeral_messages
+
+    async def send_message(self, msg: str, timeout: float = 300.0) -> Tuple[str, List[str]]:
         """ Send a message to the application """
         if not self.is_app_connected():
             raise WebSocketClosedError()
 
         self._websocket.write_message(self._wrap_message_with_envelope(msg))
 
-        try:
-            return await self._wait_for_response(timeout=timeout)
-        except util.TimeoutError:
-            return ""
+        return await self._wait_for_response(timeout=timeout)
 
     def message_received(self, msg: str):
         """ Notify the actor that a message was received """
         self._response = msg
         self._event.set()
         self._event.clear()
+
+    def ephemeral_received(self, msg: str):
+        """ Notify the actor that an ephemeral message was received """
+        self._ephemeral_messages.append(msg)
 
     @staticmethod
     def _wrap_message_with_envelope(msg: str):
