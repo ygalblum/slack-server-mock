@@ -1,5 +1,6 @@
 """ HTTP Handler """
 from datetime import datetime
+import logging
 import re
 
 from tornado.web import RequestHandler
@@ -9,6 +10,8 @@ from slack_server_mock.injector.di import global_injector
 from slack_server_mock.slack_server.slack_server import SlackServer
 from slack_server_mock.servers.base_http_handlers import load_json_from_body
 from slack_server_mock.settings.settings import Settings
+
+LOGGER = logging.getLogger(__name__)
 
 
 class BaseSlackHandler(RequestHandler):  # pylint: disable=W0223
@@ -20,6 +23,11 @@ class BaseSlackHandler(RequestHandler):  # pylint: disable=W0223
         "ok": False,
         "error": "invalid_auth",
     }
+
+    def prepare(self):
+        if not self._is_request_valid():
+            LOGGER.warning("Authentication Failure")
+            self.finish()
 
     def _is_valid_user_agent(self):
         user_agent = self.request.headers["User-Agent"]
@@ -55,8 +63,6 @@ class AuthTestHandler(BaseSlackHandler):  # pylint: disable=W0223
 
     def post(self):
         """ Handle post request """
-        if not self._is_request_valid():
-            return
         self.write(
             {
                 "ok": True,
@@ -77,8 +83,6 @@ class AppsConnectionsOpenHandler(BaseSlackHandler):  # pylint: disable=W0223
 
     def post(self):
         """ Handle post request """
-        if not self._is_request_valid():
-            return
         port = global_injector.get(Settings).slack_server.websocket_port
         self.write(
             {
@@ -93,8 +97,6 @@ class ApiTestHandler(BaseSlackHandler):  # pylint: disable=W0223
 
     def post(self):
         """ Handle post request """
-        if not self._is_request_valid():
-            return
         data = load_json_from_body(self)
         if not data:
             return
@@ -106,8 +108,6 @@ class ChatPostMessageHandler(BaseSlackHandler):  # pylint: disable=W0223
 
     def post(self):
         """ Handle post request """
-        if not self._is_request_valid():
-            return
         data = load_json_from_body(self)
         if not data:
             return
@@ -133,9 +133,6 @@ class ChatPostEphemeralHandler(BaseSlackHandler):  # pylint: disable=W0223
 
     def post(self):
         """ Handle post request """
-        # Validate the request
-        if not self._is_request_valid():
-            return
         # Get the payload
         data = load_json_from_body(self)
         if not data:
@@ -154,8 +151,6 @@ class ChatPostEphemeralHandler(BaseSlackHandler):  # pylint: disable=W0223
 class ConversationsListHandler(BaseSlackHandler):  # pylint: disable=W0223
     """ Handler for conversations.list endpoint """
     def _handle(self):
-        if not self._is_request_valid():
-            return
         self.write(
             {
                 "ok": True,
@@ -178,9 +173,6 @@ class ConversationsJoinHandler(BaseSlackHandler):  # pylint: disable=W0223
     """ Handler for conversations.join endpoint """
     def post(self):
         """ Handle POST request """
-        if not self._is_request_valid():
-            return
-
         arg = self.request.body.decode("utf-8").split('=')
         if not (len(arg) == 2 and arg[0] == "channel"):
             self.set_status(400)
