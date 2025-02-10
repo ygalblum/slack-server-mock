@@ -1,4 +1,6 @@
 """ WebSocket Server """
+import logging
+
 from injector import inject, singleton
 from tornado.httpserver import HTTPServer
 from tornado.web import Application
@@ -6,6 +8,8 @@ from tornado.web import Application
 from slack_server_mock.actor.actor import Actor
 from slack_server_mock.servers.websocket import handler
 from slack_server_mock.settings.settings import Settings
+
+LOGGER = logging.getLogger(__name__)
 
 
 @singleton
@@ -24,10 +28,10 @@ class SlackWebSocketServer():
 
     def run(self):
         """ Start the HTTP Server """
-        print(f"WebSocket server running on port {self._port}")
+        LOGGER.info("WebSocket server running on port %i", self._port)
         self._ws_server.listen(self._port)
 
     def stop(self):
         """ Stop the HTTP Server """
         self._ws_server.stop()
-        print(f"WebSocket server shutdown")
+        LOGGER.info("WebSocket server shutdown")

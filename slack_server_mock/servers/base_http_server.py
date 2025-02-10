@@ -1,6 +1,10 @@
-""" Actor HTTP Server """
+"""Base HTTP Server """
+import logging
+
 from tornado.httpserver import HTTPServer
 from tornado.web import Application
+
+LOGGER = logging.getLogger(__name__)
 
 
 class BaseHTTPServer():
@@ -11,10 +15,10 @@ class BaseHTTPServer():
 
     def run(self):
         """ Start the HTTP Server """
-        print(f"HTTP server running on port {self._port}")
+        LOGGER.info('HTTP server running on port %i', self._port)
         self._http_server.listen(self._port)
 
     def stop(self):
         """ Stop the HTTP Server """
         self._http_server.stop()
-        print("HTTP server shutdown")
+        LOGGER.info('HTTP server on port %i shutdown', self._port)
