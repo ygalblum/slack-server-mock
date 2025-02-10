@@ -1,2 +1,3 @@
-slack_server: {}
+slack_server:
+  response_data_path: test/responses/
 actor: {}

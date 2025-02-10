@@ -186,3 +186,65 @@ class ConversationsJoinHandler(BaseSlackHandler):  # pylint: disable=W0223
             self.write({"ok": False, "error": "channel_not_found"})
         else:
             self.write({"ok": True, "channel": channels[0]})
+
+
+class ResponseDataRequestHandler(BaseSlackHandler):  # pylint: disable=W0223
+    """New style of endpoint that returns static mock data"""
+    NOT_FOUND = {"ok": False, "error": "channel_not_found"}
+
+    def __init__(self, application, request, **kwargs):
+        super().__init__(application, request, **kwargs)
+        self.endpoint: str | None = None
+
+    def prepare(self):
+        super().prepare()
+        self.endpoint = self.request.path.split('/')[-1]
+        LOGGER.info('Endpoint: %s', self.endpoint)
+
+    def _handle_request(self, key: str | None = None):
+        responses = global_injector.get(SlackServer).response_data
+        if key:
+            if self.endpoint in responses and key in responses[self.endpoint]:
+                self.write(responses[self.endpoint][key])
+            else:
+                self.write(self.NOT_FOUND)
+        else:
+            self.write(self.NOT_FOUND)
+
+
+class ConversationsHistoryHandler(ResponseDataRequestHandler):  # pylint: disable=W0223
+    """ Handler for conversations.history endpoint """
+
+    def get(self):
+        """ Handle GET request """
+        channel = self.get_argument("channel", "").lower()
+        ts = self.get_argument("latest", self.get_argument("oldest", "")).lower()
+        self._handle_request(f'{channel}-{ts}')
+
+
+class ConversationsInfoHandler(ResponseDataRequestHandler):  # pylint: disable=W0223
+    """ Handler for conversations.info endpoint """
+    def get(self):
+        """ Handle GET request """
+        self._handle_request(self.get_argument("channel", "").lower())
+
+
+class ConversationsRepliesHandler(ResponseDataRequestHandler):  # pylint: disable=W0223
+    """ Handler for conversations.replies endpoint """
+    NOT_FOUND = {"ok": False, "error": "thread_not_found"}
+
+    def get(self):
+        """ Handle GET request """
+        channel = self.get_argument("channel", "").lower()
+        ts = self.get_argument("ts", "").lower()
+        self._handle_request(f'{channel}-{ts}')
+
+
+class UsersInfoHandler(ResponseDataRequestHandler):  # pylint: disable=W0223
+    """ Handler for users.info endpoint """
+    NOT_FOUND = {"ok": False, "error": "user_not_found"}
+
+    def get(self):
+        """ Handle GET request """
+        user = self.get_argument("user", "").lower()
+        self._handle_request(user)
