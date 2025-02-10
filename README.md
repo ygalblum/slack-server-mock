@@ -14,6 +14,23 @@ At minimum, each entry must have a name and an ID.
 
 In the `settings.yaml` file, set `slack_server.channels_path` to the location of the file.
 
+#### Response Data Configuration
+The `settings.yaml` file contains a `response_data` section that allows you to configure the responses of the server for specific endpoints.
+
+The responses definied in the `response_data` section are JSON files that contain the response data for the endpoint.
+
+The directory structure should be as follows:
+```
+response_data_path
+  / endpoint_name
+    / ID-VALUE.json
+```
+See the `test/responses` directory for examples.
+
+For endpoints with multiple query parameters, the file should be named with the query parameters separated by a dash. For example, `conversations.history/channel-ts.json`.
+
+In the `settings.yaml` file, set the `response_data` section to the base path for the JSON files.
+
 ### Using Poetry
 
 #### Prerequisites

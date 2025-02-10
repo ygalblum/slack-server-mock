@@ -21,8 +21,12 @@ class SlackHTTPServer(BaseHTTPServer):
                 (r"/api.test", handler.ApiTestHandler),
                 (r"/chat.postMessage", handler.ChatPostMessageHandler),
                 (r"/chat.postEphemeral", handler.ChatPostEphemeralHandler),
+                (r"/conversations.history", handler.ConversationsHistoryHandler),
+                (r"/conversations.info", handler.ConversationsInfoHandler),
                 (r"/conversations.join", handler.ConversationsJoinHandler),
                 (r"/conversations.list", handler.ConversationsListHandler),
+                (r"/conversations.replies", handler.ConversationsRepliesHandler),
+                (r"/users.info", handler.UsersInfoHandler),
             ]
         )
         super().__init__(app, settings.slack_server.http_port)

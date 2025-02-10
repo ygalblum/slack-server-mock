@@ -10,6 +10,7 @@ LOGGER = logging.getLogger(__name__)
 class BaseHTTPServer():
     """ Mock Implementation of the Slack HTTP server """
     def __init__(self, app: Application, port: int) -> None:
+        self._app = app
         self._http_server = HTTPServer(app)
         self._port = port
 

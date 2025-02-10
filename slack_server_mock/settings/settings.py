@@ -8,17 +8,22 @@ class SlackServer(BaseModel):
     """ Slack Server """
     http_port: int = Field(
         8888,
-        description="HTTP Server Listening port"
+        description="Mock Slack HTTP Server Listening port"
     )
 
     websocket_port: int = Field(
         3001,
-        description="HTTP Server Listening port"
+        description="Mock Slack Websocket Server Listening port"
     )
 
     channels_path: str = Field(
         None,
         description="Path to a file containing the list of conversations"
+    )
+
+    response_data_path: str = Field(
+        None,
+        description="Path to a directory structure containing response replies"
     )
 
 
